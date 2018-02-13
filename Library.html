@@ -1,0 +1,197 @@
+<html>
+	<head> 
+		<title> Library Management</title>
+		<script src="web3.min.js"></script>
+	</head>
+	<body>
+		<center>
+		<h3>Library</h3>
+		Add new Account:<br>
+		<input type="text" id="lib_id" placeholder="Enter id...">
+		<input type="text" id="acc_name" placeholder="Enter Name...">
+		<button onclick="addAccount()">Add Account</button><br><br>
+
+		Add Books<br>
+		<input type="text" id="book_isbn" placeholder="Book ISBN">
+		<input type="text" id="book_name" placeholder="Book Name">
+		<input type="text" id="book_count" placeholder="Count">
+		<button onclick="addBook()">Add Book</button><br><br>
+
+		Supply Book<br>
+		<input type="text" id="to_id" placeholder="Enter id...">
+		<input type="text" id="_isbn" placeholder="Enter ISBN">
+		<button onclick="getBooks()">Submit</button><br><br>
+
+		Return Book<br>
+		<input type="text" id="ret_id" placeholder="Enter id...">
+		<input type="text" id="ret_isbn" placeholder="Enter ISBN...">
+		<button onclick="returnBooks()">Return</button><br><br>
+
+		Search Availability<br>
+		<input type="text" id="search_isbn" placeholder="ISBN">
+		<button onclick="search()">Search</button/>
+		</center>
+		
+		<script>
+			var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+		        web3.eth.defaultAccount = web3.eth.accounts[0];
+			var con=web3.eth.contract([
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "totalAccount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_isbn",
+            "type": "uint256"
+          }
+        ],
+        "name": "searchBook",
+        "outputs": [
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "int256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "BookCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "int256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_id",
+            "type": "uint256"
+          },
+          {
+            "name": "_name",
+            "type": "string"
+          }
+        ],
+        "name": "addAccount",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_isbn",
+            "type": "uint256"
+          },
+          {
+            "name": "_name",
+            "type": "string"
+          },
+          {
+            "name": "_count",
+            "type": "int256"
+          }
+        ],
+        "name": "addBooks",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_id",
+            "type": "uint256"
+          },
+          {
+            "name": "_isbn",
+            "type": "uint256"
+          }
+        ],
+        "name": "getBook",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_id",
+            "type": "uint256"
+          },
+          {
+            "name": "_isbn",
+            "type": "uint256"
+          }
+        ],
+        "name": "returnBook",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      }
+    ]);
+			var conAdd=con.at('0x06becb6795b14417901fe6d2ef0a8f5e90492cce');
+			function addAccount()
+			{
+				conAdd.addAccount(document.getElementById("lib_id").value,document.getElementById("acc_name").value);
+			}
+			function addBook()
+			{
+				conAdd.addBooks(document.getElementById("book_isbn").value,document.getElementById("book_name").value,document.getElementById("book_count").value);
+			}
+			function getBooks()
+			{
+				conAdd.getBook(document.getElementById("to_id").value,document.getElementById("_isbn").value);
+			}
+			function returnBooks()
+			{
+				conAdd.returnBook(document.getElementById("ret_id").value,document.getElementById("ret_isbn").value);
+			}
+			function search()
+			{
+				var a=conAdd.searchBook(document.getElementById("search_isbn").value);
+				alert(a);
+			}	
+		</script>
+	</body>
+</html>
