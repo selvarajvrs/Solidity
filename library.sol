@@ -1,5 +1,5 @@
 pragma solidity ^0.4.0;
-contract Library
+contract Library_Management
 {
     int public BookCount;
     uint256 public totalAccount=0;
@@ -32,7 +32,7 @@ contract Library
         require(account[_id].holding==true);
         _;
     }
-    function test() public
+    function Library_Management() public
     {
         owner=msg.sender;
     }
@@ -43,7 +43,7 @@ contract Library
         BOOKS[_isbn].available+=_count;
         BookCount+=_count;
     }
-    function getBook(uint256 _id,uint256 _isbn)public payable accountHolder(_id)
+    function getBook(uint256 _id,uint256 _isbn)public payable accountHolder(_id) returns(bool)
     {
         require(BOOKS[_isbn].available>0);
         require(!account[_id].status);
@@ -52,15 +52,15 @@ contract Library
         account[_id].book_count++;
         account[_id].time= now;
         account[_id].status=true;
+        return true;
     }
     function returnBook(uint256 _id,uint256 _isbn) accountHolder(_id)
     {
-        uint256 validity=864000;
-        uint256 takenTime=now-account[_id].time;
-        if(takenTime>validity)
+        uint256 validity= 864000;
+        
+        if(now-account[_id].time>validity)
         {
-            takenTime=takenTime-validity;
-            account[_id].penalty=(takenTime/86400)*1;
+            account[_id].penalty=((now-account[_id].time-validity)/86400)*1;
         }
         if(account[_id].status)
         {
@@ -71,6 +71,10 @@ contract Library
     function searchBook(uint256 _isbn) view returns(string,int)
     {
         return(BOOKS[_isbn].name,BOOKS[_isbn].available);
+    }
+    function searchFine(uint256 _id) accountHolder(_id)  returns (uint256)
+    {
+        return account[_id].penalty;
     }
     function addAccount(uint _id,string _name) onlyOwner
     {
