@@ -9,6 +9,13 @@ contract voting
     mapping(string=>data) v;
     mapping(string=>bool) voters;
     uint256 count;
+    address Election_commission;
+    
+    modifier only_Election_commission
+    {
+        require(Election_commission==msg.sender);
+        _;
+    }
     function voting() public
     {
         v["a"].name="A";
@@ -18,24 +25,33 @@ contract voting
         v["b"].vote_count=0;
         v["c"].vote_count=0;
         count=0;
+        Election_commission=msg.sender;
     }
-    function vote(string _name,string voter) payable public
+    
+    function setCountToZero() only_Election_commission
     {
-        require(!val(voter));
-        voters[voter]=true;
-        vot(_name);
-        
+        v["a"].vote_count=0;
+        v["b"].vote_count=0;
+        v["c"].vote_count=0;
     }
-    function vot(string _name1) public
+    function vote(string candidate_name,string voter_name) payable public
     {
-        v[_name1].vote_count++;
+        require(!voters[voter_name]);
+        voters[voter_name]=true;
+        v[candidate_name].vote_count++;
+        count++;
     }
-    function val(string _v) public view returns (bool)
+    
+    function result()public view returns(string)
     {
-        return voters[_v];
-    }
-    function result(string can)public view returns(int)
-    {
-        return v[can].vote_count;
+        if((v["a"].vote_count>v["b"].vote_count)&&v["a"].vote_count>v["c"].vote_count)
+            return "A is the winner";
+        else if(v["b"].vote_count>v["a"].vote_count&&v["b"].vote_count>v["c"].vote_count)
+            return "B is the winner";
+        else if(v["c"].vote_count>v["a"].vote_count&&v["c"].vote_count>v["b"].vote_count)
+            return "C is the Winner";
+        if((v["a"].vote_count==v["b"].vote_count)||(v["a"].vote_count==v["c"].vote_count)||(v["b"].vote_count==v["b"].vote_count))
+            return "Votes are Equal";
+            
     }
 }
