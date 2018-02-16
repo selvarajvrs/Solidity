@@ -29,169 +29,275 @@
 
 		Search Availability<br>
 		<input type="text" id="search_isbn" placeholder="ISBN">
-		<button onclick="search()">Search</button/>
-		</center>
+		<button onclick="search()">Search</button><br><br>
 		
+		Check_Fine<br>
+		<input type="text" id="search_fine" placeholder="id">
+		<button onclick="search_fine()">Get fine</button>
+		<h1 id="result"></h1>
+		</center>
+
 		<script>
-			var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-		        web3.eth.defaultAccount = web3.eth.accounts[0];
+			web3.eth.defaultAccount = web3.eth.accounts[0];
 			var con=web3.eth.contract([
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "totalAccount",
-        "outputs": [
-          {
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [
-          {
-            "name": "_isbn",
-            "type": "uint256"
-          }
-        ],
-        "name": "searchBook",
-        "outputs": [
-          {
-            "name": "",
-            "type": "string"
-          },
-          {
-            "name": "",
-            "type": "int256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "BookCount",
-        "outputs": [
-          {
-            "name": "",
-            "type": "int256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [
-          {
-            "name": "_id",
-            "type": "uint256"
-          },
-          {
-            "name": "_name",
-            "type": "string"
-          }
-        ],
-        "name": "addAccount",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [
-          {
-            "name": "_isbn",
-            "type": "uint256"
-          },
-          {
-            "name": "_name",
-            "type": "string"
-          },
-          {
-            "name": "_count",
-            "type": "int256"
-          }
-        ],
-        "name": "addBooks",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [
-          {
-            "name": "_id",
-            "type": "uint256"
-          },
-          {
-            "name": "_isbn",
-            "type": "uint256"
-          }
-        ],
-        "name": "getBook",
-        "outputs": [],
-        "payable": true,
-        "stateMutability": "payable",
-        "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [
-          {
-            "name": "_id",
-            "type": "uint256"
-          },
-          {
-            "name": "_isbn",
-            "type": "uint256"
-          }
-        ],
-        "name": "returnBook",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      }
-    ]);
-			var conAdd=con.at('0x06becb6795b14417901fe6d2ef0a8f5e90492cce');
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "BookCount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_isbn",
+				"type": "uint256"
+			}
+		],
+		"name": "searchBook",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			}
+		],
+		"name": "searchFine",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_isbn",
+				"type": "uint256"
+			}
+		],
+		"name": "getBook",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_isbn",
+				"type": "uint256"
+			},
+			{
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"name": "_count",
+				"type": "int256"
+			}
+		],
+		"name": "addBooks",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_name",
+				"type": "string"
+			}
+		],
+		"name": "addAccount",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_isbn",
+				"type": "uint256"
+			}
+		],
+		"name": "returnBook",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalAccount",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	}
+]);
+			var conAdd=con.at('0x94f25d8425a2bc23f46c1485f215d31218e74aba');
+			
+			if(!web3.isConnected())
+			{
+				console.log("Ok");
+			}
+			else
+			{
+				console.log("no");
+			}
+			web3.version.getNetwork((err,netId)=>{
+				switch(netId)
+				{
+					case "1":
+						console.log('This is mainnet');
+						break;
+					case "2":
+						console.log('This is deprecated Morden test network');
+						break;
+					case "3":
+						console.log('This is ropsten test network');
+						break;
+					case "4":
+						console.log('This is the Rinkeby test network');
+					case "42":
+						console.log('This is the kovan test network');
+						break;
+					default:
+						console.log('This is an unknown network.');
+				}	
+			});
+			var result;
 			function addAccount()
 			{
-				conAdd.addAccount(document.getElementById("lib_id").value,document.getElementById("acc_name").value);
+				conAdd.addAccount(document.getElementById("lib_id").value,document.getElementById("acc_name").value, function(err,result){
+				if(!err){ 
+					console.log(result); 
+					document.getElementById("result").innerHTML="Transaction for new account has began..."+result;
+					 }
+				else{
+					console.log(err);
+				}
+				});
 			}
 			function addBook()
 			{
-				conAdd.addBooks(document.getElementById("book_isbn").value,document.getElementById("book_name").value,document.getElementById("book_count").value);
+				conAdd.addBooks(document.getElementById("book_isbn").value,document.getElementById("book_name").value,document.getElementById("book_count").value, function(err,result){
+				if(!err){
+					console.log(result); 
+					document.getElementById("result").innerHTML="Transaction for adding new books has began..."+result;
+					}
+				 else
+					 console.log(err);
+				});
 			}
 			function getBooks()
 			{
-				conAdd.getBook(document.getElementById("to_id").value,document.getElementById("_isbn").value);
+				conAdd.getBook(document.getElementById("to_id").value,document.getElementById("_isbn").value, function(err,result){
+				if(!err){
+					 console.log(result); 
+					document.getElementById("result").innerHTML="Your transaction for book "+ document.getElementById("_isbn").value+" has began..."+result;
+				 }
+				 else 
+					console.log(err);
+				});
 			}
 			function returnBooks()
 			{
-				conAdd.returnBook(document.getElementById("ret_id").value,document.getElementById("ret_isbn").value);
+				conAdd.returnBook(document.getElementById("ret_id").value,document.getElementById("ret_isbn").value, function(err,result){
+				if(!err){
+					console.log(result); 
+					document.getElementById("result").innerHTML="Your transaction for book "+ document.getElementById("ret_isbn").value+" return has began..."+result;
+				}
+				 else 
+					console.log(err);
+				});
 			}
 			function search()
 			{
-				var a=conAdd.searchBook(document.getElementById("search_isbn").value);
-				alert(a);
+				conAdd.searchBook(document.getElementById("search_isbn").value, function(err,result){
+				if(!err){
+					console.log(result);
+					document.getElementById("result").innerHTML="Book Name: "+result[0]+" Available:"+result[1]; 
+				}
+				else 
+					console.log(err);
+				});
 			}	
+			function search_fine()
+			{
+				var id=document.getElementById("search_fine").value;
+				conAdd.searchFine(id, function(err,result)
+				{
+					if(!err)
+					{
+						console.log(result);
+						document.getElementById("result").innerHTML="Fine for "+id+": "+result[0];
+					}
+				});
+			}
 		</script>
 	</body>
 </html>
