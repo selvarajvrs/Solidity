@@ -1,6 +1,6 @@
 pragma solidity ^0.4.0;
 import "./ERC20.sol";
-contract StandardToken is ERC20Basic
+contract NewSPToken is ERC20Basic
 {
     string standard="Token 1.0";
     string public name;
@@ -16,7 +16,7 @@ contract StandardToken is ERC20Basic
     {
         totalsupply=10000;
         balanceOf[msg.sender]=totalsupply;
-        symbol="NT";
+        symbol="SP";
         name="newtoken";
         initialallowed=500;
         decimals=0;
