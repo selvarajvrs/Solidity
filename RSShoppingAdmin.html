@@ -172,19 +172,11 @@
 	var a;
 	function check()
 	{
-		if(!a)
-		{
-			contract.check(function(err,result){
-			console.log(result)});
-			contract.getLowProducts(function(err,result){a=result;})
-		}
-		var obtained=[];
-		for(var i=0;i<(a.length-1);i++)
-		{
-			if(obtained[i]!=a[i])
-				obtained.push(a[i]);
-		}
-		document.getElementById("productsList").innerHTML=obtained+"\n";
+		contract.check(function(err,result){
+		console.log(result)});
+		contract.getLowProducts(function(err,result){a=result;})
+	
+		document.getElementById("productsList").innerHTML=a;
 	}
 
 	var count;
