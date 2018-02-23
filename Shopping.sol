@@ -11,7 +11,7 @@ contract Shopping is StandardToken
     uint256[] public available;
     uint256 lowCount;
     uint256 public billNum;
-    uint256[] quantity;
+    
     function Inventry() public
     {
         admin=msg.sender;
@@ -66,7 +66,7 @@ contract Shopping is StandardToken
         product[_pro_id1].quantity+=_quantity1;
         product[_pro_id1].present=true;
         productName.push(pro_name1);
-        quantity.push(_quantity1);
+        
         productId.push(_pro_id1);
         count++;
         if(product[_pro_id1].quantity<=5&&!product[_pro_id1].lowquantity)
@@ -81,9 +81,9 @@ contract Shopping is StandardToken
         }
         return true;
     }
-    function showList() public view returns(uint256[],bytes32[],uint256[])
+    function showList() public view returns(uint256[],bytes32[])
     {
-        return (productId,productName,quantity);
+        return (productId,productName);
     }
     function remove_Items(uint256 _pro_id) public OnlyOwner
     {
