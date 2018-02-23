@@ -192,7 +192,7 @@
 		{
 		var pname=[];
 		var pid=[];
-		var available=[];
+		
 		var text=[];
 		for(i=0;i<count;i++)
 		{
@@ -209,13 +209,9 @@
 			var a=result[0][j];
 			pid.push(a);
 		}
-		for(j=0;j<count;j++)
-		{
-			var a=result[2][j];
-			available.push(a);
-		}
+		
 		for(i=0;i<count;i++)
-			text.push("\n Product ID: "+pid[i]+"- Product Name: "+pname[i]+" Available: "+available[i]);
+			text.push("\n Product ID: "+pid[i]+"- Product Name: "+pname[i]);
 		document.getElementById("productList").innerHTML=text;
 		r=text;
 		console.log(result);
