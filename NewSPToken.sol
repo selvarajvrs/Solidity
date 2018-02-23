@@ -1,6 +1,6 @@
 pragma solidity ^0.4.0;
 import "./ERC20.sol";
-contract NewSPToken is ERC20Basic
+contract NewSPToken is ERC20
 {
     string standard="Token 1.0";
     string public name;
