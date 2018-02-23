@@ -113,24 +113,14 @@
 			if(!err)
 			{
 				console.log(result);
-				document.getElementById("buyresult").innerHTML="You have purchased item= "+id+" Total amount= "+ amount;
+				document.getElementById("buyresult").innerHTML="You have purchased item= "+id+" Total amount= "+ amount+" Bill Id: "+result[1];
 			}
 			else
 				console.log(err);
 		});
 	}
 	var count;
-	var pname=[];
-	var pid=[];
-	var text=[];
 	function showlist()
-	{
-		calc();	
-		document.getElementById("productList").innerHTML=text;
-		if(!(text.length==0))
-			text=[];
-	}
-	function calc()
 	{
 		contract.count(function(err,result)
 		{
@@ -138,32 +128,39 @@
 		});
 		contract.showList(function(err,result)
 		{
-			if(!err)
-			{
-			console.log(result);
-			for(i=0;i<count;i++)
-			{
+		var pname=[];
+		var pid=[];
+		var available=[];
+		var text=[];
+		for(i=0;i<count;i++)
+		{
 				var a=result[1][i];
 				var s='';
-				for(var j=0;j<a.length;j++)
+				for(var j=0;j<a.length;j+=2)
 				{
 					s+=String.fromCharCode(parseInt(a.substr(j,2),16));
 				}
 				pname.push(s);
-			}
-			for(j=0;j<count;j++)
-			{
-				var a=result[0][j];
-				pid.push(a);
-			}	
-
-			for(i=0;i<count;i++)
-			{
-				text.push("<br> Product ID: "+pid[i]+"- Product Name: "+pname[i]);
-			}
-			}
+		}
+		for(j=0;j<count;j++)
+		{
+			var a=result[0][j];
+			pid.push(a);
+		}
+		for(j=0;j<count;j++)
+		{
+			var a=result[2][j];
+			available.push(a);
+		}
+		for(i=0;i<count;i++)
+			text.push("\n Product ID: "+pid[i]+"- Product Name: "+pname[i]+" Available: "+available[i]);
+		document.getElementById("productList").innerHTML=text;
+		r=text;
+		console.log(result);
 		});
+		
 	}
+	
        	web3.eth.defaultAccount = web3.eth.accounts[0];
         var contractAbi = web3.eth.contract([
 	{
