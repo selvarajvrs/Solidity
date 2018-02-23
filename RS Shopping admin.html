@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>RS Shopping</title>
+    <script src="web3.min.js"></script>
+	<style type="text/css">
+		.pos1
+		{
+			position: fixed;
+			top: 55%;
+			left: 38%;
+			border: solid #7986CB 3px;
+		}
+		.pos2
+		{
+			position: fixed;
+			top : 20%;
+			left: 44%;
+			border: solid #7986CB 3px;
+		}
+		.pos3
+		{
+			position: fixed;
+			left: 25%;
+			top: 20%;
+			border: solid #7986CB 3px;
+		}
+		.pos4
+		{
+			position: fixed;
+			left: 63%;
+			top: 20%;
+			border: solid #7986CB 3px;
+		}
+		.pos5
+		{
+			position: fixed;
+			top: 80%;
+			left: 40%;
+			border: solid #7986CB 3px;
+		}
+	</style>
+  </head>
+  <body>
+
+		<center>
+		<h1 style="color:red;">RS Shopping</h1>
+		<!--<table border="1" align="center" width="20%">
+		<tr aligh="center">
+			<td align="center">-->
+	
+			<input type="number" id="pro_id" placeholder="Enter product id..."><br>
+			<button onclick="searchProduct()">Search</button><br><!--</td>
+		</tr>
+		</table></br>-->
+		</center>
+			<h2 id="result"></h2>
+		<div class="pos1">
+		<input type="button" value="List all Items" onclick="showlist()"><br>
+		<textarea id="productList" cols="46" rows="10"></textarea>
+		</div><div class="pos2">
+		<h3>Buy</h3>
+
+		<table border="1">
+		<tr align="center">
+			<td><input type="number" id="buy_pro_id" placeholder="Enter Product id..."><br>
+			<input type="number" id="buy_amount" placeholder="Enter amount"><br>
+			<input type="number" id="productcount" placeholder="Total Products"><br>
+			<button onclick="buyProduct()" style="padding: 0px 73px;">Buy</button>
+			</td>
+		</tr>
+		</table><br>
+		<h2 id="buyresult" value="list"></h2>
+		<input type="button" value="Get Bill Id" style="padding: 0px 60px;" onclick="getbillid()"><br>
+		</div>
+		<div class="pos3">
+
+		Add Products
+		<table border="1">
+		<tr><td><input type="number" id="add_pro_id" placeholder="Enter product id...">	</td></tr>
+		<tr><td><input type="text" id="add_pro_name" placeholder="Enter product name...">	</td></tr>
+		<tr><td><input type="number" id="add_pro_price" placeholder="Enter product price..."></td></tr>
+		<tr><td><input type="number" id="add_pro_quantity" placeholder="Enter product quantity..."></td></tr>
+		<tr> <td><button onclick="addProduct()" style="padding: 0px 55px;">Add Items</button><br>	</td></tr><br><br>
+		</table><br>
+		
+		<h2 id="addresult"></h2>
+		</div>
+		<div class="pos4">
+		Get Bill
+		<table border="1">
+		<tr align="center">
+			<td><input type="number" id="billnum" placeholder="Bill number..."><br>
+			<input type="button" value="Get" onclick="getbill()" style="padding: 0px 73px;">
+			</td>
+		</tr>
+		</table><br><br>
+		Remove Products
+		<table border="1">
+		<tr>	<td><input type="number" id="remove_pro_id" placeholder="Enter Product id...">	</td></tr>
+		<tr>	<td><button onclick="removeProduct()" style="padding: 0px 42px;">Remove Items</button>	</td></tr>
+		</tr>
+		</table><br>
+		<h2 id="removeresult"></h2>
+		</div>
+		<center class="pos5">
+		
+		<input type="button" value="Check products" onclick="check()" style="padding: 0px 45px;"><br>
+		<textarea id="productsList" cols="40" rows="10"></textarea>
+		</center>
+  </body>
+<script>					
+	function searchProduct()
+	{
+		var id=document.getElementById("pro_id").value;
+		contract.search_product(id, function(err,result)
+		{
+			if(!err)
+			{
+				console.log(result);
+				document.getElementById("result").innerHTML="Pro_id= "+id+" , Price= "+result[0]+" , Available= "+result[1];
+			}
+			else
+				console.log(err)
+		});
+	}
+	function buyProduct()
+	{
+		var id=parseInt(document.getElementById("buy_pro_id").value);
+		var amount=parseInt(document.getElementById("buy_amount").value);
+		var count=document.getElementById("productcount").value;
+		contract.buy_product(id,amount,count, function(err, result)
+		{
+			if(!err)
+			{
+				console.log(result);
+				document.getElementById("buyresult").innerHTML="You have purchased item= "+id+" Total amount= "+ amount+" Bill Id: "+result[1];
+			}
+			else
+				console.log(err);
+		});
+	}
+	function getbillid()
+	{
+		contract.billNum(function(err,result){ alert(result)});
+	}
+	function getbill()
+	{
+		
+		contract.getBill(document.getElementById("billnum").value,function(err,result){
+			alert("Totel Items:"+result[0]+"\nTokens:"+result[1]+"\nCustomer: "+result[3]);
+		});
+	}
+	function addProduct()
+	{
+		var id=document.getElementById("add_pro_id").value;
+		var name=document.getElementById("add_pro_name").value;
+		var price=document.getElementById("add_pro_price").value;
+		var quantity=document.getElementById("add_pro_quantity").value;
+		contract.add_Items(id,name, price, quantity, function(err,result)
+		{
+			if(!err)
+			{
+				console.log(result);
+				document.getElementById("addresult").innerHTML="product details sent";	
+			}
+			else
+				console.log(err);
+		});
+	}
+	var a;
+	function check()
+	{
+		if(!a)
+		{
+			contract.check(function(err,result){
+			console.log(result)});
+			contract.getLowProducts(function(err,result){a=result;})
+		}
+		var obtained=[];
+		for(var i=0;i<(a.length-1);i++)
+		{
+			if(obtained[i]!=a[i])
+				obtained.push(a[i]);
+		}
+		document.getElementById("productsList").innerHTML=obtained+"\n";
+	}
+
+	var count;
+	var r;
+	
+	function showlist()
+	{
+		contract.count(function(err,result)
+		{
+			if(!err) count=result;
+		});
+		contract.showList(function(err,result)
+		{
+		var pname=[];
+		var pid=[];
+		var available=[];
+		var text=[];
+		for(i=0;i<count;i++)
+		{
+				var a=result[1][i];
+				var s='';
+				for(var j=0;j<a.length;j+=2)
+				{
+					s+=String.fromCharCode(parseInt(a.substr(j,2),16));
+				}
+				pname.push(s);
+		}
+		for(j=0;j<count;j++)
+		{
+			var a=result[0][j];
+			pid.push(a);
+		}
+		for(j=0;j<count;j++)
+		{
+			var a=result[2][j];
+			available.push(a);
+		}
+		for(i=0;i<count;i++)
+			text.push("\n Product ID: "+pid[i]+"- Product Name: "+pname[i]+" Available: "+available[i]);
+		document.getElementById("productList").innerHTML=text;
+		r=text;
+		console.log(result);
+		});
+		
+	}
+	function view()
+	{
+		document.getElementById("productList").innerHTML=text;
+	}
+	function calc()
+	{	
+	}
+	function removeProduct()
+	{
+		var id=document.getElementById("remove_pro_id").value;
+		contract.remove_Items(id, function(err, result)
+		{
+			if(!err)
+			{
+				console.log(result);
+				document.getElementById("removeresult").innerHTML="product list updated";
+			}
+			else
+				console.log(err);
+		});
+	}
+       	web3.eth.defaultAccount = web3.eth.accounts[0];
+        var contractAbi = web3.eth.contract([
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalsupply",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "showList",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "bytes32[]"
+			},
+			{
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_pro_id",
+				"type": "uint256"
+			}
+		],
+		"name": "search_product",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getLowProducts",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_billNum",
+				"type": "uint256"
+			}
+		],
+		"name": "getBill",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "decimals",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "count",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "available",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "allowed",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_owner",
+				"type": "address"
+			},
+			{
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "allowance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "billNum",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_pro_id1",
+				"type": "uint256"
+			},
+			{
+				"name": "pro_name1",
+				"type": "bytes32"
+			},
+			{
+				"name": "_price1",
+				"type": "uint256"
+			},
+			{
+				"name": "_quantity1",
+				"type": "uint256"
+			}
+		],
+		"name": "add_Items",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "buyToken",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_pro_id",
+				"type": "uint256"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "_pro_count",
+				"type": "uint256"
+			}
+		],
+		"name": "buy_product",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "check",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "decreaseApproval",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "increaseApproval",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_pro_id",
+				"type": "uint256"
+			}
+		],
+		"name": "remove_Items",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]); 
+        var contract = contractAbi.at('0x9CAA3CA02D22186c0DC185f8Ed2eAA4d08B8BD5E');
+</script>
+</html>
