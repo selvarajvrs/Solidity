@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>RS Shopping</title>
+    <script src="web3.min.js"></script>
+	<style>
+	.pos1{
+	//position: absolute;
+	top: 0px;
+	left: 0px;
+	
+	align="center";
+	}
+	.pos2{
+	position:fixed;
+	top: 50px;
+	align="center";
+	right:20px;
+	}
+	.pos3{
+	position: fixed;
+	top: 25px;
+	right: 10px;
+	}
+	</style>
+  </head>
+  <body>
+		<center>
+		<div class="pos1">
+		<h1 style="color:red;">RS Shopping</h1>
+		<!--<table border="1" align="center" width="20%">
+		<tr aligh="center">
+			<td align="center">--><input type="number" id="pro_id" placeholder="Enter product id..."><br>
+			<button onclick="searchProduct()">Search</button><br><!--</td>
+		</tr>
+		</table></br>-->
+			<h2 id="result"></h2>
+
+		<input type="button" value="List all Items" onclick="showlist()"><br>
+		<textarea id="productList" cols="45" rows="10"></textarea>
+	
+		
+		<h3>Buy</h3>
+
+		<table border="1">
+		<tr align="center">
+			<td><input type="number" id="buy_pro_id" placeholder="Enter Product id..."><br>
+			<input type="number" id="buy_amount" placeholder="Enter amount"><br>
+			<input type="number" id="productcount" placeholder="Total Products"><br>
+			<button onclick="buyProduct()" style="padding: 0px 73px;">Buy</button>
+			</td>
+		</tr>
+		</table><br>
+		<h2 id="buyresult" value="list"></h2>
+
+		</center>
+		</div>
+		
+		<div class="pos2"> 
+
+			<table border="1" style=" border-color: coral;">
+			<center>
+			<tr style="color:red;"><td align="center"><b>Admin Login</b></td></tr>
+			<tr><td>USERNAME : <input type="text" placeholder="username" id="username"> </td></tr><br><br>
+			<tr><td>PASSWORD : <input type="password" placeholder="password" id="password"></td></tr><br><br>
+			<tr><td align="center"><input type="button" onclick="return login()" value="LOGIN"> </td></tr>
+			</center>
+		
+		</div>
+		
+		<div class="pos3">
+			<h1><a href="BuyToken.html">click here to buy tokens</a></h1>
+		</div>
+
+  </body>
+<script>		
+	function login()
+	{
+		var a= document.getElementById("username").value;
+		var b= document.getElementById("password").value;
+		
+		if(a=='admin' && b=='admin')
+		{
+		window.location="InventryManagement.html";
+		}
+		else
+		{
+			alert("Sorry!!! Username or Password is invalid");
+		}
+	}			
+	function searchProduct()
+	{
+		var id=document.getElementById("pro_id").value;
+		contract.search_product(id, function(err,result)
+		{
+			if(!err)
+			{
+				console.log(result);
+				document.getElementById("result").innerHTML="Pro_id= "+id+" , Price= "+result[0]+" , Available= "+result[1];
+			}
+			else
+				console.log(err)
+		});
+	}
+	function buyProduct()
+	{
+		var id=parseInt(document.getElementById("buy_pro_id").value);
+		var amount=parseInt(document.getElementById("buy_amount").value);
+		var count=document.getElementById("productcount").value;
+		contract.buy_product(id,amount,count, function(err, result)
+		{
+			if(!err)
+			{
+				console.log(result);
+				document.getElementById("buyresult").innerHTML="You have purchased item= "+id+" Total amount= "+ amount;
+			}
+			else
+				console.log(err);
+		});
+	}
+	var count;
+	var pname=[];
+	var pid=[];
+	var text=[];
+	function showlist()
+	{
+		calc();	
+		document.getElementById("productList").innerHTML=text;
+		if(!(text.length==0))
+			text=[];
+	}
+	function calc()
+	{
+		contract.count(function(err,result)
+		{
+			if(!err) count=result;
+		});
+		contract.showList(function(err,result)
+		{
+			if(!err)
+			{
+			console.log(result);
+			for(i=0;i<count;i++)
+			{
+				var a=result[1][i];
+				var s='';
+				for(var j=0;j<a.length;j++)
+				{
+					s+=String.fromCharCode(parseInt(a.substr(j,2),16));
+				}
+				pname.push(s);
+			}
+			for(j=0;j<count;j++)
+			{
+				var a=result[0][j];
+				pid.push(a);
+			}	
+
+			for(i=0;i<count;i++)
+			{
+				text.push("<br> Product ID: "+pid[i]+"- Product Name: "+pname[i]);
+			}
+			}
+		});
+	}
+       	web3.eth.defaultAccount = web3.eth.accounts[0];
+        var contractAbi = web3.eth.contract([
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalsupply",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "showList",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "bytes32[]"
+			},
+			{
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_pro_id",
+				"type": "uint256"
+			}
+		],
+		"name": "search_product",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getLowProducts",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_billNum",
+				"type": "uint256"
+			}
+		],
+		"name": "getBill",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "decimals",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "count",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "available",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "allowed",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_owner",
+				"type": "address"
+			},
+			{
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "allowance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "billNum",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "fallback"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_pro_id1",
+				"type": "uint256"
+			},
+			{
+				"name": "pro_name1",
+				"type": "bytes32"
+			},
+			{
+				"name": "_price1",
+				"type": "uint256"
+			},
+			{
+				"name": "_quantity1",
+				"type": "uint256"
+			}
+		],
+		"name": "add_Items",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "spender",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "tokens",
+				"type": "uint256"
+			}
+		],
+		"name": "buyToken",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_pro_id",
+				"type": "uint256"
+			},
+			{
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"name": "_pro_count",
+				"type": "uint256"
+			}
+		],
+		"name": "buy_product",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "check",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "decreaseApproval",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "increaseApproval",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_pro_id",
+				"type": "uint256"
+			}
+		],
+		"name": "remove_Items",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transfer",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]); 
+        var contract = contractAbi.at('0x9CAA3CA02D22186c0DC185f8Ed2eAA4d08B8BD5E');
+</script>
+</html>
