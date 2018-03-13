@@ -12,7 +12,7 @@ contract NewSPToken is ERC20
     mapping(address=>uint) public balanceOf;
     mapping(address=>mapping(address=>uint256))public allowed;
 
-    function StandardToken()public
+    function NewSPToken()public
     {
         totalsupply=10000;
         balanceOf[msg.sender]=totalsupply;
