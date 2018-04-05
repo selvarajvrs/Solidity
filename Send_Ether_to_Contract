@@ -1,0 +1,33 @@
+// contract2 can send ether from contract2 to contract1
+
+pragma solidity^0.4.0;
+contract contract1
+{
+    function() public payable
+    {
+        
+    }
+    function showBalance()public view returns(uint256)
+    {
+        return this.balance;
+    }
+}
+
+
+
+pragma solidity^0.4.0;
+contract contract2
+{
+    function()public payable
+    {
+        
+    }
+    function showBalance()public view returns(uint256)
+    {
+        return this.balance;
+    }
+    function sendEther(address contadd)public returns(bool)
+    {
+       return contadd.call.gas(2500000).value(1 ether)();//call.value()();
+    }
+}
